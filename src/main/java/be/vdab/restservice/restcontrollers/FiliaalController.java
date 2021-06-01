@@ -30,13 +30,15 @@ public class FiliaalController {
         this.links = links.forType(Filiaal.class, Filiaal::getId);
     }
 
-    /*
+/*
     @GetMapping("{id}")
     Filiaal get(@PathVariable long id){
         return filiaalService.findById(id)
                 .orElseThrow(FiliaalNietGevondenException::new);
     }
-     */
+
+ */
+
     @GetMapping("{id}")
     EntityModel<Filiaal> get(@PathVariable long id) {
         return filiaalService.findById(id)
@@ -46,6 +48,8 @@ public class FiliaalController {
                                 .slash("werknemers").withRel("werknemers")))
                 .orElseThrow(FiliaalNietGevondenException::new);
     }
+
+
 
     @ExceptionHandler(FiliaalNietGevondenException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -57,12 +61,14 @@ public class FiliaalController {
         filiaalService.delete(id);
     }
 
-    /*
+/*
     @PostMapping
     void post(@RequestBody @Valid Filiaal filiaal){
         filiaalService.create(filiaal);
     }
-     */
+
+ */
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     HttpHeaders create(@RequestBody @Valid Filiaal filiaal) {
@@ -71,6 +77,8 @@ public class FiliaalController {
         headers.setLocation(links.linkForItemResource(filiaal).toUri());
         return headers;
     }
+
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
