@@ -3,6 +3,7 @@ package be.vdab.restservice.restcontrollers;
 import be.vdab.restservice.domain.Filiaal;
 import be.vdab.restservice.exceptions.FiliaalNietGevondenException;
 import be.vdab.restservice.services.FiliaalService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.EntityLinks;
@@ -30,15 +31,15 @@ public class FiliaalController {
         this.links = links.forType(Filiaal.class, Filiaal::getId);
     }
 
-/*
-    @GetMapping("{id}")
-    Filiaal get(@PathVariable long id){
-        return filiaalService.findById(id)
-                .orElseThrow(FiliaalNietGevondenException::new);
-    }
+    /*
+        @GetMapping("{id}")
+        Filiaal get(@PathVariable long id){
+            return filiaalService.findById(id)
+                    .orElseThrow(FiliaalNietGevondenException::new);
+        }
 
- */
-
+     */
+    @Operation(summary = "Een filiaal zoeken op id")
     @GetMapping("{id}")
     EntityModel<Filiaal> get(@PathVariable long id) {
         return filiaalService.findById(id)
@@ -50,25 +51,25 @@ public class FiliaalController {
     }
 
 
-
     @ExceptionHandler(FiliaalNietGevondenException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     void filiaalNietGevonden() {
     }
 
+    @Operation(summary = "Een filiaal verwijderen")
     @DeleteMapping("{id}")
     void delete(@PathVariable long id) {
         filiaalService.delete(id);
     }
 
-/*
-    @PostMapping
-    void post(@RequestBody @Valid Filiaal filiaal){
-        filiaalService.create(filiaal);
-    }
+    /*
+        @PostMapping
+        void post(@RequestBody @Valid Filiaal filiaal){
+            filiaalService.create(filiaal);
+        }
 
- */
-
+     */
+  
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     HttpHeaders create(@RequestBody @Valid Filiaal filiaal) {
@@ -79,7 +80,6 @@ public class FiliaalController {
     }
 
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, String> verkeerdeData(MethodArgumentNotValidException ex) {
@@ -87,30 +87,32 @@ public class FiliaalController {
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
     }
 
+    @Operation(summary = "Een filiaal wijzigen")
     @PutMapping("{id}")
     void put(@PathVariable long id, @RequestBody @Valid Filiaal filiaal) {
         filiaalService.update(filiaal.withId(id));
     }
 
+    @Operation(summary = "Alle filialen zoeken")
     @GetMapping
-    CollectionModel<EntityModel<FiliaalIdNaam>> findAll(){
+    CollectionModel<EntityModel<FiliaalIdNaam>> findAll() {
         return CollectionModel.of(
                 filiaalService.findAll().stream()
-                .map(filiaal ->
-                        EntityModel.of(new FiliaalIdNaam(filiaal),
-                                links.linkToItemResource(filiaal)))
-                ::iterator,
+                        .map(filiaal ->
+                                EntityModel.of(new FiliaalIdNaam(filiaal),
+                                        links.linkToItemResource(filiaal)))
+                        ::iterator,
                 links.linkToCollectionResource()
         );
     }
 
-    private static class FiliaalIdNaam{
+    private static class FiliaalIdNaam {
         private final long id;
         private final String naam;
 
         FiliaalIdNaam(Filiaal filiaal) {
-            id= filiaal.getId();
-            naam=filiaal.getNaam();
+            id = filiaal.getId();
+            naam = filiaal.getNaam();
         }
 
         public long getId() {
